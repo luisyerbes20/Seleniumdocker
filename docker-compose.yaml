@@ -1,0 +1,52 @@
+version: '3.8'
+services:
+  jupyter2:
+    build:
+      context: .
+      dockerfile: dockerfile
+    command: jupyter lab --ip='0.0.0.0' --port=8888 --no-browser --allow-root --notebook-dir=/home
+    restart: always
+    networks:
+      - urdaten-net
+    volumes:
+      - ./notebooks:/home
+    ports:
+      - '8888:8888'
+    expose:
+      - '8888'
+  db:
+    image: mongo:4.4.23
+    hostname: mongi
+    environment: 
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: rootpassword
+    ports:
+      - 27017:27017
+    volumes:
+      - C:\mongodb\db:/data/db
+    networks:
+      - urdaten-net
+
+  seli:
+    container_name: selenium
+    hostname: seli
+    image: selenium/standalone-chrome:3.141.59-20210128
+    ports:
+      - 4444:4444
+    volumes:
+      - /dev/sh:/dev/sh
+
+  extractor:
+    container_name: extractor-selenium
+    restart: on-failure
+    ports:
+      - 9999:9999
+    build:
+      context: .
+      dockerfile: Dockerfile.dev
+    working_dir: /extraseli
+    command: python3 cambio.py 
+
+networks:
+  urdaten-net:
+    driver: bridge 

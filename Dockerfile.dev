@@ -1,0 +1,6 @@
+FROM python:3.7
+RUN useradd -ms /bin/bash 1201
+WORKDIR /extraseli
+COPY /extraseli /extraseli
+RUN pip install -r requirements.txt
+CMD ["python", "./cambio.py"]
